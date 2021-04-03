@@ -1,6 +1,6 @@
 use std::ops::{Add, Neg, Sub};
 
-#[derive(PartialEq, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 struct Tuple {
     x: f64,
     y: f64,
@@ -108,8 +108,10 @@ mod tests {
         // so precise
         let p1 = Tuple::point(9.0, 1.00000000000000000000000000000001, 9999999999.9);
         let p2 = Tuple::point(8.9999999999999999999999999999, 1.0, 9999999999.9);
+        let p3 = Tuple::point(1., 1., 1.);
 
-        assert_eq!(p1, p2)
+        assert_eq!(p1, p2);
+        assert_ne!(p1, p3);
     }
 
     #[test]
@@ -133,15 +135,16 @@ mod tests {
         let a = Tuple::vector(3., 2., 1.);
         let b = Tuple::vector(5., 6., 7.);
 
-        assert_eq!(a - b, Tuple::vector(-2., -4., -6.))
+        assert_eq!(a - b, Tuple::vector(-2., -4., -6.));
     }
 
-    // #[test]
-    // fn test_negating_vectors() {
-    //     let a = Tuple::vector(3., 2., 1.);
-    //     let b = -a;
-    //
-    //     assert_eq!(-a, Tuple::vector(-3., -2., -1.));
-    // }
+    #[test]
+    fn test_negating_vectors() {
+        let a = Tuple::vector(3., 2., 1.);
+        let b = -a;
+
+        assert_eq!(-a, Tuple::vector(-3., -2., -1.));
+        assert_eq!(-b, a);
+    }
 
 }
