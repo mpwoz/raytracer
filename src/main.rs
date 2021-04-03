@@ -1,4 +1,4 @@
-mod point;
+mod tuple;
 
 fn main() {
     println!("Hello, world!");

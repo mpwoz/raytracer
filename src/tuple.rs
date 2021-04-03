@@ -1,5 +1,7 @@
 use std::ops::{Add, Mul, Neg, Sub, Div};
 
+/// Deriving Copy/Clone treats these as primitive values. That means passing by value creates copies
+/// so we don't lose ownership in the caller. Tuples are treated as immutable.
 #[derive(Copy, Clone, Debug, PartialEq)]
 struct Tuple {
     x: f64,
@@ -56,7 +58,7 @@ impl Mul<f64> for Tuple {
     }
 }
 
-/// Scalar multiplication (commutative)
+/// We have to redefine scalar multiplication to make it commutative.
 impl Mul<Tuple> for f64 {
     type Output = Tuple;
 
@@ -64,6 +66,8 @@ impl Mul<Tuple> for f64 {
         rhs * self
     }
 }
+
+/// division is just multiplication but inversed.
 impl Div<f64> for Tuple {
     type Output = Self;
 
