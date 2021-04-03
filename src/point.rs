@@ -1,4 +1,4 @@
-use std::ops::{Add, Neg, Sub};
+use std::ops::{Add, Mul, Neg, Sub, Div};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 struct Tuple {
@@ -42,8 +42,37 @@ impl Neg for Tuple {
     }
 }
 
-impl Tuple {
+/// Scalar multiplication
+impl Mul<f64> for Tuple {
+    type Output = Self;
 
+    fn mul(self, rhs: f64) -> Self::Output {
+        Tuple {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+            w: self.w * rhs,
+        }
+    }
+}
+
+/// Scalar multiplication (commutative)
+impl Mul<Tuple> for f64 {
+    type Output = Tuple;
+
+    fn mul(self, rhs: Tuple) -> Self::Output {
+        rhs * self
+    }
+}
+impl Div<f64> for Tuple {
+    type Output = Self;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        self * (1.0 / rhs)
+    }
+}
+
+impl Tuple {
     fn point(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 1.0 }
     }
@@ -147,4 +176,17 @@ mod tests {
         assert_eq!(-b, a);
     }
 
+    #[test]
+    fn test_multiplying_and_dividing_vectors() {
+        let a = Tuple::vector(1., -2., 3.);
+        assert_eq!(a * 3.5, Tuple::vector(3.5, -7., 10.5));
+        assert_eq!(a * 0.5, Tuple::vector(0.5, -1., 1.5));
+
+        // is commutative?
+        assert_eq!(3.5 * a, Tuple::vector(3.5, -7., 10.5));
+        assert_eq!(0.5 * a, Tuple::vector(0.5, -1., 1.5));
+
+        // division
+        assert_eq!(a * 0.5, a / 2.);
+    }
 }
