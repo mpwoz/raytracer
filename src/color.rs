@@ -12,6 +12,12 @@ pub struct Color {
 }
 
 impl Color {
+    pub const RED: Color = Color {
+        red: 1.0,
+        green: 0.0,
+        blue: 0.0,
+    };
+
     pub(crate) fn rgb(r: f64, g: f64, b: f64) -> Color {
         Color {
             red: r,
