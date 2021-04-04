@@ -11,13 +11,21 @@ struct Tuple {
     /* whether this is a point (1) or vector (0) */
 }
 
+/// Instance methods
 impl Tuple {
-    // TODO in Rust, is there a way to split vector-specific operations into a subtype of tuple?
-
-    /// Calculate magnitude of a vector using pythagoras' formula
-    pub(crate) fn magnitude(vector: Tuple) -> f64 {
-        (vector.x.powi(2) + vector.y.powi(2) + vector.z.powi(2)).sqrt()
+    /// Return a Vector's magnitude using Pythagoras' theorem.
+    pub(crate) fn magnitude(&self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
+}
+
+/// Static methods
+impl Tuple {
+    pub(crate) fn normalized(vector: Self) -> Self {
+        let len = vector.magnitude();
+        vector / len
+    }
+
     pub(crate) fn point(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 1.0 }
     }
@@ -203,13 +211,34 @@ mod tests {
 
     #[test]
     fn test_magnitude() {
-        assert_eq!(Tuple::magnitude(Tuple::vector(1., 0., 0.)), 1.);
-        assert_eq!(Tuple::magnitude(Tuple::vector(0., 1., 0.)), 1.);
-        assert_eq!(Tuple::magnitude(Tuple::vector(0., 0., 1.)), 1.);
+        fn test(vec: Tuple, expected: f64) {
+            assert_eq!(vec.magnitude(), expected);
+        }
+
+        test(Tuple::vector(1., 0., 0.), 1.);
+        test(Tuple::vector(0., 1., 0.), 1.);
+        test(Tuple::vector(0., 0., 1.), 1.);
 
         let expected = 14.0_f64.sqrt();
         let v = Tuple::vector(1., 2., 3.);
-        assert_eq!(Tuple::magnitude(v), expected);
-        assert_eq!(Tuple::magnitude(-v), expected);
+        test(v, expected);
+        test(-v, expected);
+    }
+
+    #[test]
+    fn test_unit_vector() {
+        fn test(vec: Tuple, expected: Tuple) {
+            assert_eq!(Tuple::normalized(vec), expected);
+        }
+
+        test(Tuple::vector(4., 0., 0.), Tuple::vector(1., 0., 0.));
+        test(
+            Tuple::vector(1., 2., 3.),
+            Tuple::vector(
+                (1.0 / 14.0_f64.sqrt()),
+                (2.0 / 14.0_f64.sqrt()),
+                (3.0 / 14.0_f64.sqrt()),
+            ),
+        );
     }
 }
