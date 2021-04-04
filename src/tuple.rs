@@ -45,6 +45,31 @@ impl fmt::Display for Tuple {
     }
 }
 
+/// Check that both operands are vectors.
+macro_rules! assert_vectors {
+        ($lhs: expr, $rhs: expr) => {{
+            assert!( $lhs.is_vector(), "LHS must be a vector, but was {}", $lhs );
+            assert!( $rhs.is_vector(), "RHS must be a vector, but was {}", $rhs );
+        }};
+    }
+
+#[cfg(test)]
+mod assert_vectors_tests {
+    use super::*;
+
+    #[test]
+    fn test_assert_vectors() {
+        assert_vectors!(Tuple::vector(1., 2., 3.), Tuple::vector(2., 3., 4.))
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_assert_non_vectors() {
+        assert_vectors!(Tuple::point(1., 2., 3.), Tuple::vector(2., 3., 4.))
+    }
+}
+
+
 /// Instance methods
 impl Tuple {
     /// Return a Vector's magnitude using Pythagoras' theorem.
@@ -56,17 +81,18 @@ impl Tuple {
     /// Intuitively: small number (-1): vectors point away from each other. Large (1) they point the same direction.
     /// dot of two unit vectors is the cosine of angle between them.
     pub(crate) fn dot(&self, rhs: Tuple) -> f64 {
-        assert!(
-            self.is_vector(),
-            "left side must be a vector, but was: {}",
-            self
-        );
-        assert!(
-            rhs.is_vector(),
-            "right side must be a vector, but was: {}",
-            rhs
-        );
+        assert_vectors!(self, rhs);
         (self.x * rhs.x) + (self.y * rhs.y) + (self.z * rhs.z) + (self.w * rhs.w)
+    }
+
+    /// Cross product of two vectors
+    /// Result is a vector perpendicular to them
+    pub(crate) fn cross(self, rhs: Self) -> Self {
+        assert_vectors!(self, rhs);
+        let x: f64 = self.y * rhs.z - self.z * rhs.y;
+        let y: f64 = self.z * rhs.x - self.x * rhs.z;
+        let z: f64 = self.x * rhs.y - self.y * rhs.x;
+        Tuple::vector(x, y, z)
     }
 }
 
@@ -299,5 +325,13 @@ mod tests {
         let a = Tuple::vector(1., 2., 3.);
         let b = Tuple::vector(2., 3., 4.);
         assert_eqf64!(a.dot(b), 20.);
+    }
+
+    #[test]
+    fn test_cross_product() {
+        let a = Tuple::vector(1., 2., 3.);
+        let b = Tuple::vector(2., 3., 4.);
+        assert_eq!(a.cross(b), Tuple::vector(-1., 2., -1.));
+        assert_eq!(b.cross(a), Tuple::vector(1., -2., 1.));
     }
 }
