@@ -1,4 +1,4 @@
-use std::ops::{Add, Mul, Neg, Sub, Div};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// Deriving Copy/Clone treats these as primitive values. That means passing by value creates copies
 /// so we don't lose ownership in the caller. Tuples are treated as immutable.
@@ -7,7 +7,32 @@ struct Tuple {
     x: f64,
     y: f64,
     z: f64,
-    w: f64, /* whether this is a point (1) or vector (0) */
+    w: f64,
+    /* whether this is a point (1) or vector (0) */
+}
+
+impl Tuple {
+    // TODO in Rust, is there a way to split vector-specific operations into a subtype of tuple?
+
+    /// Calculate magnitude of a vector using pythagoras' formula
+    pub(crate) fn magnitude(vector: Tuple) -> f64 {
+        (vector.x.powi(2) + vector.y.powi(2) + vector.z.powi(2)).sqrt()
+    }
+    pub(crate) fn point(x: f64, y: f64, z: f64) -> Tuple {
+        Tuple { x, y, z, w: 1.0 }
+    }
+
+    pub(crate) fn vector(x: f64, y: f64, z: f64) -> Tuple {
+        Tuple { x, y, z, w: 0.0 }
+    }
+
+    pub(crate) fn is_point(&self) -> bool {
+        self.w == 1.0
+    }
+
+    pub(crate) fn is_vector(&self) -> bool {
+        self.w == 0.0
+    }
 }
 
 impl Add for Tuple {
@@ -73,24 +98,6 @@ impl Div<f64> for Tuple {
 
     fn div(self, rhs: f64) -> Self::Output {
         self * (1.0 / rhs)
-    }
-}
-
-impl Tuple {
-    fn point(x: f64, y: f64, z: f64) -> Tuple {
-        Tuple { x, y, z, w: 1.0 }
-    }
-
-    fn vector(x: f64, y: f64, z: f64) -> Tuple {
-        Tuple { x, y, z, w: 0.0 }
-    }
-
-    fn is_point(&self) -> bool {
-        self.w == 1.0
-    }
-
-    fn is_vector(&self) -> bool {
-        self.w == 0.0
     }
 }
 
@@ -192,5 +199,17 @@ mod tests {
 
         // division
         assert_eq!(a * 0.5, a / 2.);
+    }
+
+    #[test]
+    fn test_magnitude() {
+        assert_eq!(Tuple::magnitude(Tuple::vector(1., 0., 0.)), 1.);
+        assert_eq!(Tuple::magnitude(Tuple::vector(0., 1., 0.)), 1.);
+        assert_eq!(Tuple::magnitude(Tuple::vector(0., 0., 1.)), 1.);
+
+        let expected = 14.0_f64.sqrt();
+        let v = Tuple::vector(1., 2., 3.);
+        assert_eq!(Tuple::magnitude(v), expected);
+        assert_eq!(Tuple::magnitude(-v), expected);
     }
 }
