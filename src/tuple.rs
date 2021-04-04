@@ -17,6 +17,15 @@ impl Tuple {
     pub(crate) fn magnitude(&self) -> f64 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
+
+    /// Dot product of this vector with another (defined as sum of products of each vector component)
+    /// Intuitively: small number (-1): vectors point away from each other. Large (1) they point the same direction.
+    /// dot of two unit vectors is the cosine of angle between them.
+    pub(crate) fn dot(&self, rhs: Tuple) -> f64 {
+        assert_eq!(self.w, 0., "left side must be a vector, but was: {}", self);
+        assert_eq!(rhs.w, 0., "right side must be a vector, but was: {}", rhs);
+        (self.x * rhs.x) + (self.y * rhs.y) + (self.z * rhs.z) + (self.w * rhs.w)
+    }
 }
 
 /// Static methods
@@ -240,5 +249,12 @@ mod tests {
                 (3.0 / 14.0_f64.sqrt()),
             ),
         );
+    }
+
+    #[test]
+    fn test_dot_product() {
+        let a = Tuple::vector(1., 2., 3.);
+        let b = Tuple::vector(2., 3., 4.);
+        assert_eq!(a.dot(b), 20.);
     }
 }
