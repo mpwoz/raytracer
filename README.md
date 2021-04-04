@@ -29,7 +29,7 @@
 
 ## Book Progress
 
-- Chapter 1: Tuples, points and vectors
+- ✅ Chapter 1: Tuples, points and vectors
 - Chapter 2: Drawing on a canvas
 - Chapter 3: Matrices
 - Chapter 4: Matrix transformations
