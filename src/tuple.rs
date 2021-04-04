@@ -87,11 +87,11 @@ impl Tuple {
 
 
     pub(crate) fn is_point(&self) -> bool {
-        eq_f64(self.w, 1.0f64)
+        eq_f64(self.w, 1_f64)
     }
 
     pub(crate) fn is_vector(&self) -> bool {
-        (self.w - 0.0).abs() < f64::EPSILON
+        eq_f64(self.w, 0_f64)
     }
 }
 
