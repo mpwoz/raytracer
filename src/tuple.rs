@@ -1,4 +1,16 @@
+use std::fmt;
+use std::fmt::Formatter;
 use std::ops::{Add, Div, Mul, Neg, Sub};
+
+#[cfg(test)]
+use crate::assert_eqf64;
+
+// test-only imports aren't included in actual build
+
+/// Function to test for float
+pub fn eq_f64(a: f64, b: f64) -> bool {
+    (a - b).abs() < f64::EPSILON
+}
 
 /// Deriving Copy/Clone treats these as primitive values. That means passing by value creates copies
 /// so we don't lose ownership in the caller. Tuples are treated as immutable.
@@ -9,6 +21,28 @@ struct Tuple {
     z: f64,
     w: f64,
     /* whether this is a point (1) or vector (0) */
+}
+
+
+impl fmt::Display for Tuple {
+    /// adds ability to use the '{}' print marker for Tuples (i.e. toString)
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        // can't @ bind a var if there are further matches in the inner patter as of https://github.com/rust-lang/rust/issues/65490
+        // once that's fixed can refactor this to read like: tup@Tuple{x, y, z} if tup.is_point() => ...
+        match self {
+            Tuple { x, y, z, .. } if self.is_point() => {
+                write!(f, "Tuple(point): {}, {}, {}", x, y, z)
+            }
+            Tuple { x, y, z, .. } if self.is_vector() => {
+                write!(f, "Tuple(vector): {}, {}, {}", x, y, z)
+            }
+            Tuple { x, y, z, w } => write!(
+                f,
+                "Invalid Tuple (neither point nor vector)! x:{}, y:{}, z:{}, w:{}",
+                x, y, z, w
+            ),
+        }
+    }
 }
 
 /// Instance methods
@@ -22,8 +56,16 @@ impl Tuple {
     /// Intuitively: small number (-1): vectors point away from each other. Large (1) they point the same direction.
     /// dot of two unit vectors is the cosine of angle between them.
     pub(crate) fn dot(&self, rhs: Tuple) -> f64 {
-        assert_eq!(self.w, 0., "left side must be a vector, but was: {}", self);
-        assert_eq!(rhs.w, 0., "right side must be a vector, but was: {}", rhs);
+        assert!(
+            self.is_vector(),
+            "left side must be a vector, but was: {}",
+            self
+        );
+        assert!(
+            rhs.is_vector(),
+            "right side must be a vector, but was: {}",
+            rhs
+        );
         (self.x * rhs.x) + (self.y * rhs.y) + (self.z * rhs.z) + (self.w * rhs.w)
     }
 }
@@ -43,12 +85,13 @@ impl Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
 
+
     pub(crate) fn is_point(&self) -> bool {
-        self.w == 1.0
+        eq_f64(self.w, 1.0f64)
     }
 
     pub(crate) fn is_vector(&self) -> bool {
-        self.w == 0.0
+        (self.w - 0.0).abs() < f64::EPSILON
     }
 }
 
@@ -131,10 +174,10 @@ mod tests {
             w: 1.0,
         };
 
-        assert_eq!(point.x, 4.3);
-        assert_eq!(point.y, -4.2);
-        assert_eq!(point.z, 3.1);
-        assert_eq!(point.w, 1.0);
+        assert_eqf64!(point.x, 4.3);
+        assert_eqf64!(point.y, -4.2);
+        assert_eqf64!(point.z, 3.1);
+        assert_eqf64!(point.w, 1.0);
         assert_eq!(point.is_point(), true);
         assert_eq!(point.is_vector(), false);
 
@@ -150,10 +193,10 @@ mod tests {
             w: 0.0,
         };
 
-        assert_eq!(vector.x, 4.3);
-        assert_eq!(vector.y, -4.2);
-        assert_eq!(vector.z, 3.1);
-        assert_eq!(vector.w, 0.0);
+        assert_eqf64!(vector.x, 4.3);
+        assert_eqf64!(vector.y, -4.2);
+        assert_eqf64!(vector.z, 3.1);
+        assert_eqf64!(vector.w, 0.0);
         assert_eq!(vector.is_point(), false);
         assert_eq!(vector.is_vector(), true);
 
@@ -221,7 +264,7 @@ mod tests {
     #[test]
     fn test_magnitude() {
         fn test(vec: Tuple, expected: f64) {
-            assert_eq!(vec.magnitude(), expected);
+            assert_eqf64!(vec.magnitude(), expected);
         }
 
         test(Tuple::vector(1., 0., 0.), 1.);
@@ -244,9 +287,9 @@ mod tests {
         test(
             Tuple::vector(1., 2., 3.),
             Tuple::vector(
-                (1.0 / 14.0_f64.sqrt()),
-                (2.0 / 14.0_f64.sqrt()),
-                (3.0 / 14.0_f64.sqrt()),
+                1.0 / 14.0_f64.sqrt(),
+                2.0 / 14.0_f64.sqrt(),
+                3.0 / 14.0_f64.sqrt(),
             ),
         );
     }
@@ -255,6 +298,6 @@ mod tests {
     fn test_dot_product() {
         let a = Tuple::vector(1., 2., 3.);
         let b = Tuple::vector(2., 3., 4.);
-        assert_eq!(a.dot(b), 20.);
+        assert_eqf64!(a.dot(b), 20.);
     }
 }
