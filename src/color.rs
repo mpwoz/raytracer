@@ -20,11 +20,11 @@ impl Color {
         }
     }
 
-    fn vec(&self) -> Tuple {
+    fn tuple(&self) -> Tuple {
         Tuple::vector(self.red, self.green, self.blue)
     }
 
-    fn from_vec(v: Tuple) -> Color {
+    fn from_tuple(v: Tuple) -> Color {
         Color {
             red: v.x,
             green: v.y,
@@ -37,7 +37,7 @@ impl Add for Color {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Color::from_vec(self.vec() + rhs.vec())
+        Color::from_tuple(self.tuple() + rhs.tuple())
     }
 }
 
@@ -45,7 +45,7 @@ impl Neg for Color {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
-        Color::from_vec(-self.vec())
+        Color::from_tuple(-self.tuple())
     }
 }
 
@@ -61,7 +61,7 @@ impl Mul<f64> for Color {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        Color::from_vec(self.vec() * rhs)
+        Color::from_tuple(self.tuple() * rhs)
     }
 }
 
@@ -69,7 +69,7 @@ impl Mul<Color> for f64 {
     type Output = Color;
 
     fn mul(self, rhs: Color) -> Self::Output {
-        Color::from_vec(rhs.vec() * self)
+        Color::from_tuple(rhs.tuple() * self)
     }
 }
 
@@ -78,7 +78,7 @@ impl Mul for Color {
     type Output = Color;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Color::from_vec(Tuple::hadamard(self.vec(), rhs.vec()))
+        Color::from_tuple(Tuple::hadamard(self.tuple(), rhs.tuple()))
     }
 }
 
@@ -92,7 +92,7 @@ impl Div<f64> for Color {
 
 impl PartialEq for Color {
     fn eq(&self, other: &Self) -> bool {
-        self.vec() == other.vec()
+        self.tuple() == other.tuple()
     }
 }
 
