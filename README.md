@@ -16,16 +16,12 @@
 
 ## TODO
 
-- [ ] in Rust, can we make Vector/Point types that "inherit" from tuple but only implement relevant operations on each
-  one?
-- [ ] Learn how to split things into modules.
-  See https://doc.rust-lang.org/book/ch07-05-separating-modules-into-different-files.html
-- [ ] Learn how to split projects into crates that are part of a
+- in Rust, can we make Vector/Point types that "inherit" from tuple but only implement relevant operations on each one?
+- Learn how to split projects into crates that are part of a
   workspace https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
-
-## Done
-
-- [x] add 'clippy' linter to project
+- Can we generate the operators for Color in terms of Tuple automatically, using a macro?
+  - this would make any other extensions of Tuple easier to write since they could all just define a from/to tuple
+    conversion and then all operators can delegate to underlying tuple implementations.
 
 ## Book Progress
 

@@ -5,24 +5,21 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 #[cfg(test)]
 use crate::assert_eqf64;
 
-// test-only imports aren't included in actual build
-
-/// Function to test for float
+/// Function to test for float equality
 pub fn eq_f64(a: f64, b: f64) -> bool {
     (a - b).abs() < f64::EPSILON
 }
 
 /// Deriving Copy/Clone treats these as primitive values. That means passing by value creates copies
 /// so we don't lose ownership in the caller. Tuples are treated as immutable.
-#[derive(Copy, Clone, Debug, PartialEq)]
-struct Tuple {
-    x: f64,
-    y: f64,
-    z: f64,
-    w: f64,
+#[derive(Copy, Clone, Debug)]
+pub struct Tuple {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub w: f64,
     /* whether this is a point (1) or vector (0) */
 }
-
 
 impl fmt::Display for Tuple {
     /// adds ability to use the '{}' print marker for Tuples (i.e. toString)
@@ -47,11 +44,11 @@ impl fmt::Display for Tuple {
 
 /// Check that both operands are vectors.
 macro_rules! assert_vectors {
-        ($lhs: expr, $rhs: expr) => {{
-            assert!( $lhs.is_vector(), "LHS must be a vector, but was {}", $lhs );
-            assert!( $rhs.is_vector(), "RHS must be a vector, but was {}", $rhs );
-        }};
-    }
+    ($lhs: expr, $rhs: expr) => {{
+        assert!($lhs.is_vector(), "LHS must be a vector, but was {}", $lhs);
+        assert!($rhs.is_vector(), "RHS must be a vector, but was {}", $rhs);
+    }};
+}
 
 #[cfg(test)]
 mod assert_vectors_tests {
@@ -68,7 +65,6 @@ mod assert_vectors_tests {
         assert_vectors!(Tuple::point(1., 2., 3.), Tuple::vector(2., 3., 4.))
     }
 }
-
 
 /// Instance methods
 impl Tuple {
@@ -94,6 +90,17 @@ impl Tuple {
         let z: f64 = self.x * rhs.y - self.y * rhs.x;
         Tuple::vector(x, y, z)
     }
+
+    /// Hadamard product of two tuples (multiply individual components together).
+    /// Can be used to blend a color with another.
+    pub(crate) fn hadamard(self, rhs: Self) -> Self {
+        Tuple {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
+            w: self.w * rhs.w,
+        }
+    }
 }
 
 /// Static methods
@@ -110,7 +117,6 @@ impl Tuple {
     pub(crate) fn vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
-
 
     pub(crate) fn is_point(&self) -> bool {
         eq_f64(self.w, 1_f64)
@@ -184,6 +190,15 @@ impl Div<f64> for Tuple {
 
     fn div(self, rhs: f64) -> Self::Output {
         self * (1.0 / rhs)
+    }
+}
+
+impl PartialEq for Tuple {
+    fn eq(&self, other: &Self) -> bool {
+        eq_f64(self.x, other.x)
+            && eq_f64(self.y, other.y)
+            && eq_f64(self.z, other.z)
+            && eq_f64(self.w, other.w)
     }
 }
 
@@ -333,5 +348,13 @@ mod tests {
         let b = Tuple::vector(2., 3., 4.);
         assert_eq!(a.cross(b), Tuple::vector(-1., 2., -1.));
         assert_eq!(b.cross(a), Tuple::vector(1., -2., 1.));
+    }
+
+    #[test]
+    fn test_hadamard_product() {
+        let a = Tuple::vector(1., 2., 3.);
+        let b = Tuple::vector(2., 3., 4.);
+        assert_eq!(a.hadamard(b), Tuple::vector(2., 6., 12.));
+        assert_eq!(a.hadamard(b), b.hadamard(a));
     }
 }
