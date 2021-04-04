@@ -34,6 +34,29 @@ impl Canvas {
     pub(crate) fn pixel_at(&self, x: usize, y: usize) -> Color {
         self.pixels[self.index(x, y)]
     }
+
+    pub fn render_as_ppm(&self) -> String {
+        // TODO: create a simple wrapper around a "File" that's just a vector of "lines" (strings).
+        // Then call render() on that which joins the lines with \n, and optionally adds the ability to write to disk
+        todo!();
+
+        let newline = "\n";
+
+        // rough estimate of capacity needed to render the whole canvas to PPM
+        let mut s = String::with_capacity(self.width * self.height * 3 * 2 + 10);
+
+        // header
+        s.push_str("P3");
+        s.push_str(newline);
+
+        s.push_str(format!("{} {}\n", self.width, self.height).as_str());
+        s.push_str("255\n");
+
+        // pixel data
+
+        s.push_str(" kdlsjflkasdjflkasjfaslk ");
+        s
+    }
 }
 
 #[cfg(test)]
