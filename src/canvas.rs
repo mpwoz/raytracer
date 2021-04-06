@@ -7,6 +7,16 @@ struct Canvas {
 }
 
 impl Canvas {
+    pub(crate) fn fill(&mut self, color: Color) {
+        for x in 0..self.width {
+            for y in 0..self.height {
+                self.write_pixel(x, y, color);
+            }
+        }
+    }
+}
+
+impl Canvas {
     fn new(width: usize, height: usize) -> Canvas {
         let len: usize = width * height;
         let mut pixels = Vec::with_capacity(len);
@@ -36,10 +46,6 @@ impl Canvas {
     }
 
     pub fn render_as_ppm(&self) -> String {
-        // TODO: create a simple wrapper around a "File" that's just a vector of "lines" (strings).
-        // Then call render() on that which joins the lines with \n, and optionally adds the ability to write to disk
-        todo!();
-
         let newline = "\n";
 
         // rough estimate of capacity needed to render the whole canvas to PPM
@@ -48,13 +54,28 @@ impl Canvas {
         // header
         s.push_str("P3");
         s.push_str(newline);
-
-        s.push_str(format!("{} {}\n", self.width, self.height).as_str());
-        s.push_str("255\n");
+        s.push_str(format!("{} {}{}", self.width, self.height, newline).as_str());
+        s.push_str(format!("255{}", newline).as_str());
 
         // pixel data
+        for y in 0..self.height {
+            let max_line_length = 70;
+            let mut line_length = 0;
 
-        s.push_str(" kdlsjflkasdjflkasjfaslk ");
+            for x in 0..self.width {
+                let color = self.pixel_at(x, y);
+                let color_str: String = color.render_as_ppm();
+                if line_length + color_str.len() > max_line_length {
+                    s.push_str(newline);
+                    line_length = 0;
+                }
+                line_length += color_str.len();
+                s.push_str(color_str.as_str());
+            }
+            s.push_str(newline)
+        }
+
+        // return s
         s
     }
 }
@@ -83,5 +104,69 @@ mod tests {
 
         c.write_pixel(2, 3, red);
         assert_eq!(c.pixel_at(2, 3), red);
+    }
+
+    #[test]
+    fn test_render_as_ppm_header() {
+        let c = Canvas::new(5, 3);
+
+        let header = c.render_as_ppm()
+            .lines()
+            .take(3)
+            .fold(String::new(), |a, b| a + b + "\n");
+
+        let expected = "P3\n\
+        5 3\n\
+        255\n";
+        assert_eq!(header, expected);
+    }
+
+    #[test]
+    fn test_render_as_ppm_pixels() {
+        let mut c = Canvas::new(5, 3);
+        let c1: Color = Color::rgb(1.5, 0., 0.);
+        let c2: Color = Color::rgb(0., 0.5, 0.);
+        let c3: Color = Color::rgb(-0.5, 0., 1.);
+        c.write_pixel(0, 0, c1);
+        c.write_pixel(2, 1, c2);
+        c.write_pixel(4, 2, c3);
+
+        let ppm = c.render_as_ppm().lines()
+            .skip(3)
+            .fold(String::new(), |a, b| a + b + "\n");
+
+        let expected = "\
+        255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n\
+        0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 \n\
+        0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 \n";
+        assert_eq!(ppm, expected);
+    }
+
+    #[test]
+    fn test_rendering_limits_line_length() {
+        let mut canvas = Canvas::new(9, 2);
+        let color = Color::rgb(1., 0.8, 0.6);
+        canvas.fill(color);
+
+        // TODO encapsulate ppm rendering/manipulation
+        let ppm = canvas.render_as_ppm().lines()
+            .skip(3)
+            .fold(String::new(), |a, b| a + b + "\n");
+
+        assert_eq!(ppm, "\
+        255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n\
+        255 204 153 255 204 153 255 204 153 255 204 153 \n\
+        255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n\
+        255 204 153 255 204 153 255 204 153 255 204 153 \n\
+        ");
+    }
+
+    #[test]
+    fn test_ppm_ends_in_newline() {
+        let canvas = Canvas::new(1, 1);
+        let ppm = canvas.render_as_ppm();
+        let last = ppm.chars().last().unwrap();
+
+        assert_eq!(last, '\n');
     }
 }

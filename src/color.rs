@@ -12,6 +12,24 @@ pub struct Color {
 }
 
 impl Color {
+    pub fn clamp(&self) -> Color {
+        let (min, max) = (0_f64, 1_f64);
+        Color::rgb(
+            self.red.clamp(min, max),
+            self.green.clamp(min, max),
+            self.blue.clamp(min, max),
+        )
+    }
+    pub(crate) fn render_as_ppm(&self) -> String {
+        let clamped = self.clamp();
+        fn rgb(value: f64) -> i32 {
+            (value * 255_f64).ceil() as i32
+        }
+        format!("{} {} {} ", rgb(clamped.red), rgb(clamped.green), rgb(clamped.blue))
+    }
+}
+
+impl Color {
     pub const RED: Color = Color {
         red: 1.0,
         green: 0.0,
@@ -139,5 +157,11 @@ mod tests {
         let c1: Color = Color::rgb(1f64, 0.2f64, 0.4f64);
         let c2: Color = Color::rgb(0.9f64, 1f64, 0.1f64);
         assert_eq!(c1 * c2, Color::rgb(0.9, 0.2, 0.04));
+    }
+
+    #[test]
+    fn test_render_as_ppm() {
+        let c1: Color = Color::rgb(2f64, 0f64, 0.5f64);
+        assert_eq!(c1.render_as_ppm(), "255 0 128 ");
     }
 }
