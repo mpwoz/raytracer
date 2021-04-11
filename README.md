@@ -26,7 +26,7 @@
 ## Book Progress
 
 - ✅ Chapter 1: Tuples, points and vectors
-- Chapter 2: Drawing on a canvas
+- ✅ Chapter 2: Drawing on a canvas
 - Chapter 3: Matrices
 - Chapter 4: Matrix transformations
 - Chapter 5: Ray-Sphere intersections
