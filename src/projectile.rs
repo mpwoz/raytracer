@@ -1,22 +1,43 @@
+use crate::canvas::Canvas;
+use crate::color::Color;
 use crate::tuple::Tuple;
 
-struct Projectile {
-    position: Tuple,
-    velocity: Tuple,
+pub struct Projectile {
+    pub position: Tuple,
+    pub velocity: Tuple,
 }
 
-struct Environment {
-    gravity: Tuple,
-    wind: Tuple,
+pub struct Environment {
+    pub gravity: Tuple,
+    pub wind: Tuple,
 }
 
 impl Projectile {
-    fn update(&self, env: &Environment, dtime: f64) -> Self {
+    pub fn update(&self, env: &Environment, dtime: f64) -> Self {
         let position = self.position + (self.velocity * dtime);
         let accel = (env.gravity + env.wind) * dtime;
         let velocity = self.velocity + accel;
 
         Projectile { position, velocity }
+    }
+
+    pub fn coords(&self) -> (i64, i64) {
+        (
+            self.position.x.round() as i64,
+            self.position.y.round() as i64,
+        )
+    }
+
+    pub fn is_out_of_bounds(&self, canvas: &Canvas) -> bool {
+        let (x, y) = self.coords();
+
+        x < 0 || y < 0 || x.abs() as usize > canvas.width || y.abs() as usize > canvas.height
+    }
+
+    pub(crate) fn draw_on(&self, canvas: &mut Canvas) {
+        let (x, y) = self.coords();
+        let y = canvas.height - (y as usize);
+        canvas.write_pixel(x as usize, y, Color::RED);
     }
 }
 

@@ -1,8 +1,8 @@
 use crate::color::Color;
 
-struct Canvas {
-    width: usize,
-    height: usize,
+pub struct Canvas {
+    pub width: usize,
+    pub height: usize,
     pixels: Vec<Color>,
 }
 
@@ -14,10 +14,8 @@ impl Canvas {
             }
         }
     }
-}
 
-impl Canvas {
-    fn new(width: usize, height: usize) -> Canvas {
+    pub fn new(width: usize, height: usize) -> Canvas {
         let len: usize = width * height;
         let mut pixels = Vec::with_capacity(len);
 
@@ -110,7 +108,8 @@ mod tests {
     fn test_render_as_ppm_header() {
         let c = Canvas::new(5, 3);
 
-        let header = c.render_as_ppm()
+        let header = c
+            .render_as_ppm()
             .lines()
             .take(3)
             .fold(String::new(), |a, b| a + b + "\n");
@@ -131,7 +130,9 @@ mod tests {
         c.write_pixel(2, 1, c2);
         c.write_pixel(4, 2, c3);
 
-        let ppm = c.render_as_ppm().lines()
+        let ppm = c
+            .render_as_ppm()
+            .lines()
             .skip(3)
             .fold(String::new(), |a, b| a + b + "\n");
 
@@ -149,16 +150,21 @@ mod tests {
         canvas.fill(color);
 
         // TODO encapsulate ppm rendering/manipulation
-        let ppm = canvas.render_as_ppm().lines()
+        let ppm = canvas
+            .render_as_ppm()
+            .lines()
             .skip(3)
             .fold(String::new(), |a, b| a + b + "\n");
 
-        assert_eq!(ppm, "\
+        assert_eq!(
+            ppm,
+            "\
         255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n\
         255 204 153 255 204 153 255 204 153 255 204 153 \n\
         255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n\
         255 204 153 255 204 153 255 204 153 255 204 153 \n\
-        ");
+        "
+        );
     }
 
     #[test]
