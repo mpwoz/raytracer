@@ -110,6 +110,9 @@ impl Tuple {
         vector / len
     }
 
+    pub(crate) fn origin() -> Tuple {
+        Self::point(0., 0., 0.)
+    }
     pub(crate) fn point(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 1.0 }
     }
