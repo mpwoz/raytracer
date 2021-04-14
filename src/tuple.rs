@@ -4,11 +4,7 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[cfg(test)]
 use crate::assert_eqf64;
-
-/// Function to test for float equality
-pub fn eq_f64(a: f64, b: f64) -> bool {
-    (a - b).abs() < f64::EPSILON
-}
+use crate::eqf64::eq_f64;
 
 /// Deriving Copy/Clone treats these as primitive values. That means passing by value creates copies
 /// so we don't lose ownership in the caller. Tuples are treated as immutable.

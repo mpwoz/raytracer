@@ -6,11 +6,13 @@ use crate::canvas::Canvas;
 use crate::projectile::{Environment, Projectile};
 use crate::tuple::Tuple;
 
-mod assert_eqf64;
+mod eqf64;
 mod canvas;
 mod color;
 mod projectile;
 mod tuple;
+mod matrix;
+mod assert_eqf64;
 
 fn main() {
     println!("Hello, world!");

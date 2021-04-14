@@ -25,7 +25,12 @@ impl Color {
         fn rgb(value: f64) -> i32 {
             (value * 255_f64).ceil() as i32
         }
-        format!("{} {} {} ", rgb(clamped.red), rgb(clamped.green), rgb(clamped.blue))
+        format!(
+            "{} {} {} ",
+            rgb(clamped.red),
+            rgb(clamped.green),
+            rgb(clamped.blue)
+        )
     }
 }
 
