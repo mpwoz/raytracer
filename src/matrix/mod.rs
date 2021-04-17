@@ -5,6 +5,7 @@ use crate::tuple::Tuple;
 
 pub mod determinant;
 pub mod operators;
+pub mod parsing;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
