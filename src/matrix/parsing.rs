@@ -27,7 +27,6 @@ impl FromStr for Matrix {
         // parse each individual row string into a vector of floats
         let mut elements = Vec::new();
         for row in rows {
-            println!("{:?}", row);
             let parsed: Vec<f64> = parse_vector(row)?;
             elements.push(parsed);
         }

@@ -1,11 +1,13 @@
 use std::fmt::{Display, Formatter, Result};
 
 use crate::assert_eqf64;
+use crate::eqf64::eq_f64;
 use crate::tuple::Tuple;
 
 pub mod determinant;
 pub mod operators;
 pub mod parsing;
+mod functional;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
@@ -92,6 +94,12 @@ impl Matrix {
         }
 
         m
+    }
+
+
+    pub fn round_elements(&self, places: i32) -> Matrix {
+        let fac = 10_f64.powi(places);
+        self.map_elements(|e| (e * fac).round() / fac)
     }
 }
 
