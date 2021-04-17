@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter, Result};
+
 use crate::assert_eqf64;
 use crate::tuple::Tuple;
 
@@ -9,6 +11,16 @@ pub struct Matrix {
     pub width: usize,
     pub height: usize,
     pub elements: Vec<Vec<f64>>,
+}
+
+impl Display for Matrix {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(
+            f,
+            "Matrix width:{}, height:{}, elements:\n{:?}",
+            self.width, self.height, self.elements
+        )
+    }
 }
 
 impl Matrix {
