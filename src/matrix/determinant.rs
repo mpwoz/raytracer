@@ -6,6 +6,7 @@ use crate::matrix::Matrix;
 /// This file contains operations like:
 /// Finding the determinant of various size matrices
 /// Inverting matrices
+
 impl Matrix {
     /// If the matrix is a square, returns the length of an edge
     fn square_size(&self) -> Option<usize> {
@@ -45,7 +46,9 @@ impl Matrix {
         );
         a * d - b * c
     }
+}
 
+impl Matrix {
     /// A "minor" is just a determinant of a submatrix.
     pub fn minor(&self, row: usize, col: usize) -> f64 {
         self.submatrix(row, col).determinant()

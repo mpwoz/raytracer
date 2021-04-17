@@ -1,16 +1,24 @@
 ## Notes
 
-#### Development
+### Development
 
 - `ctrl + Q`: show docs for symbol under cursor
 - `ctrl + K`: VCS (git) commit dialog
+- `ctrl` + `[`/`]`: move to opening/closing bracket of current block
+- `ctrl` + `-`/`+`: collapse/expand current code block
+- `ctrl` + `shift` + `-`/`+`: collapse/expand all code blocks
 
-#### Testing
+#### Useful rust smart templates
+
+- `tmod`+`<TAB>`: generate test module
+- `tfn`+`<TAB>`: generate test function
+
+### Testing
 
 - First, install: `cargo install cargo-watch`
 - Then, from the project's root directory run `cargo watch -x test` to automatically rerun all tests on save.
 
-#### Further Reading
+### Further Reading
 
 - https://cheats.rs/ "Cheat sheet" with links to more details in the online rust books
 
@@ -20,8 +28,8 @@
 - Learn how to split projects into crates that are part of a
   workspace https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
 - Can we generate the operators for Color in terms of Tuple automatically, using a macro?
-  - this would make any other extensions of Tuple easier to write since they could all just define a from/to tuple
-    conversion and then all operators can delegate to underlying tuple implementations.
+    - this would make any other extensions of Tuple easier to write since they could all just define a from/to tuple
+      conversion and then all operators can delegate to underlying tuple implementations.
 
 ## Book Progress
 
