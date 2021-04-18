@@ -1,3 +1,7 @@
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
+
 use crate::color::Color;
 
 pub struct Canvas {
@@ -75,6 +79,22 @@ impl Canvas {
 
         // return s
         s
+    }
+
+    pub fn save_to_disk(&self, location: &str) {
+        let ppm = self.render_as_ppm();
+
+        let path = Path::new(location);
+        let display = path.display();
+        let mut file = match File::create(&path) {
+            Err(why) => panic!("couldn't create {}: {}", display, why),
+            Ok(file) => file,
+        };
+
+        match file.write_all(ppm.as_bytes()) {
+            Err(why) => panic!("couldn't write to {}: {}", display, why),
+            Ok(_) => println!("successfully wrote output to {}", display),
+        };
     }
 }
 
