@@ -97,6 +97,17 @@ impl Tuple {
             w: self.w * rhs.w,
         }
     }
+
+    pub fn round(&self, places: i32) -> Self {
+        let fac: f64 = 10_f64.powi(places);
+        let round = |i: f64| (i * fac).round() / fac;
+        Tuple {
+            x: round(self.x),
+            y: round(self.y),
+            z: round(self.z),
+            w: round(self.w),
+        }
+    }
 }
 
 /// Static methods

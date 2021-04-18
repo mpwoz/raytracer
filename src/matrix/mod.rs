@@ -8,6 +8,7 @@ pub mod determinant;
 pub mod operators;
 pub mod parsing;
 mod functional;
+mod transformation;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
@@ -95,7 +96,6 @@ impl Matrix {
 
         m
     }
-
 
     pub fn round_elements(&self, places: i32) -> Matrix {
         let fac = 10_f64.powi(places);
@@ -189,7 +189,7 @@ mod tests {
             z: 3.0,
             w: 1.0,
         };
-        assert_eq!((i * t), Matrix::from_tuple(t).transpose());
+        assert_eq!((i * t), t);
     }
 
     #[test]

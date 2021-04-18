@@ -58,11 +58,22 @@ impl Mul for Matrix {
 }
 
 impl Mul<Tuple> for Matrix {
-    type Output = Matrix;
+    type Output = Tuple;
 
     fn mul(self, rhs: Tuple) -> Self::Output {
         let b = Matrix::from_tuple(rhs).transpose();
-        self * b
+        let m = self * b;
+
+        assert_eq!((m.width, m.height), (1, 4), "Expected a 1x4 (tall) matrix after multiplying with tuple, but got: \n{}", m);
+
+        let (x, y, z, w) = (
+            m.get(0, 0),
+            m.get(1, 0),
+            m.get(2, 0),
+            m.get(3, 0),
+        );
+
+        Tuple { x, y, z, w }
     }
 }
 
@@ -132,7 +143,7 @@ mod tests {
             z: 33.0,
             w: 1.0,
         };
-        let exp = Matrix::from_tuple(exp).transpose();
+        let exp = exp;
 
         assert_eq!(m * t, exp);
     }
