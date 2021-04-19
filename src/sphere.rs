@@ -1,14 +1,13 @@
 use crate::assert_eqf64;
 use crate::matrix::Matrix;
-use crate::object::Object;
 use crate::ray::Ray;
+use crate::shape::{CanIntersect, Shape};
 use crate::tuple::Tuple;
 
+#[derive(Debug, PartialEq)]
 pub struct Sphere {
     pub transform: Matrix,
 }
-
-impl Object for Sphere {}
 
 impl Sphere {
     pub fn new() -> Sphere {
@@ -16,7 +15,14 @@ impl Sphere {
             transform: Matrix::transformation(),
         }
     }
-    pub fn intersect(&self, ray: Ray) -> Vec<f64> {
+}
+
+impl CanIntersect for Sphere {
+    fn transform(&self) -> &Matrix {
+        &(self.transform)
+    }
+
+    fn intersect(&self, ray: Ray) -> Vec<f64> {
         let sphere_to_ray = ray.origin - Tuple::origin(); // sphere assumed to be at origin
 
         // https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
@@ -27,13 +33,13 @@ impl Sphere {
 
         // if discriminant is negative, the ray misses the sphere
         if discriminant < 0. {
-            return vec!();
+            return vec![];
         }
 
         let t1 = (-b - discriminant.sqrt()) / (2. * a);
         let t2 = (-b + discriminant.sqrt()) / (2. * a);
 
-        vec!(t1, t2)
+        vec![t1, t2]
     }
 }
 
