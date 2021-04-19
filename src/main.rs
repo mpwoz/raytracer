@@ -18,6 +18,8 @@ mod projectile;
 mod tuple;
 mod ray;
 mod sphere;
+mod intersection;
+mod object;
 
 fn main() {
     println!("Hello, world!");

@@ -1,11 +1,14 @@
 use crate::assert_eqf64;
 use crate::matrix::Matrix;
+use crate::object::Object;
 use crate::ray::Ray;
 use crate::tuple::Tuple;
 
 pub struct Sphere {
     pub transform: Matrix,
 }
+
+impl Object for Sphere {}
 
 impl Sphere {
     pub fn new() -> Sphere {
