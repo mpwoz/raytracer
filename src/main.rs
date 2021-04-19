@@ -16,6 +16,8 @@ mod eqf64;
 mod matrix;
 mod projectile;
 mod tuple;
+mod ray;
+mod sphere;
 
 fn main() {
     println!("Hello, world!");
