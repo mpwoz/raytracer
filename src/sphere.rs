@@ -16,7 +16,7 @@ impl Sphere {
             transform: Matrix::transformation(),
         }
     }
-    pub fn intersect(&self, ray: Ray) -> Option<(f64, f64)> {
+    pub fn intersect(&self, ray: Ray) -> Vec<f64> {
         let sphere_to_ray = ray.origin - Tuple::origin(); // sphere assumed to be at origin
 
         // https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
@@ -27,13 +27,13 @@ impl Sphere {
 
         // if discriminant is negative, the ray misses the sphere
         if discriminant < 0. {
-            return None;
+            return vec!();
         }
 
         let t1 = (-b - discriminant.sqrt()) / (2. * a);
         let t2 = (-b + discriminant.sqrt()) / (2. * a);
 
-        Some((t1, t2))
+        vec!(t1, t2)
     }
 }
 
@@ -53,7 +53,7 @@ mod tests {
 
         // The "t" values at which the ray intersects the sphere
         let xs = s.intersect(r);
-        assert_eq!(xs, Some((4.0, 6.0)));
+        assert_eq!(xs, vec!(4.0, 6.0));
     }
 
     #[test]
@@ -61,7 +61,7 @@ mod tests {
         let r = Ray::new(Tuple::point(0.0, 1.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(r);
-        assert_eq!(xs, Some((5.0, 5.0)));
+        assert_eq!(xs, vec!(5.0, 5.0));
     }
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
         let r = Ray::new(Tuple::point(0.0, 2.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(r);
-        assert!(xs.is_none());
+        assert_eq!(xs.len(), 0);
     }
 
     #[test]
@@ -77,7 +77,7 @@ mod tests {
         let r = Ray::new(Tuple::point(0.0, 0.0, 0.0), Tuple::vector(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(r);
-        assert_eq!(xs, Some((-1.0, 1.0)));
+        assert_eq!(xs, vec!(-1.0, 1.0));
     }
 
     #[test]
@@ -85,6 +85,6 @@ mod tests {
         let r = Ray::new(Tuple::point(0.0, 0.0, 5.0), Tuple::vector(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(r);
-        assert_eq!(xs, Some((-6.0, -4.0)));
+        assert_eq!(xs, vec!(-6.0, -4.0));
     }
 }
