@@ -21,6 +21,8 @@ impl Ray {
 
 #[cfg(test)]
 mod tests {
+    use crate::tuple::{point, vector};
+
     use super::*;
 
     #[test]
@@ -37,13 +39,13 @@ mod tests {
     #[test]
     fn computing_point_from_distance() {
         let r = Ray::new(
-            Tuple::point(2., 3., 4.),
-            Tuple::vector(1., 0., 0.),
+            point(2, 3, 4),
+            vector(1, 0, 0),
         );
 
-        assert_eq!(r.position(0.), Tuple::point(2., 3., 4.));
-        assert_eq!(r.position(1.), Tuple::point(3., 3., 4.));
-        assert_eq!(r.position(-1.), Tuple::point(1., 3., 4.));
-        assert_eq!(r.position(2.5), Tuple::point(4.5, 3., 4.));
+        assert_eq!(r.position(0.), point(2, 3, 4));
+        assert_eq!(r.position(1.), point(3, 3, 4));
+        assert_eq!(r.position(-1.), point(1, 3, 4));
+        assert_eq!(r.position(2.5), point(4.5, 3, 4));
     }
 }
