@@ -4,6 +4,7 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::canvas::Canvas;
+use crate::challenges::chapter5_render_sphere_silhouette;
 use crate::color::Color;
 use crate::matrix::Matrix;
 use crate::projectile::{Environment, Projectile};
@@ -19,13 +20,16 @@ mod tuple;
 mod ray;
 mod sphere;
 mod shape;
+mod challenges;
 
 
 fn main() {
     println!("Hello, world!");
     // ch2_projectile();
     // ch4_clock_face();
-    animated_clock_frames();
+    // animated_clock_frames();
+
+    chapter5_render_sphere_silhouette()
 }
 
 /// Chapter 2 drawing a projectile
