@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use crate::assert_eqf64;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
@@ -8,7 +10,7 @@ pub trait CanIntersect {
     fn intersect(&self, ray: Ray) -> Vec<f64>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Intersection<'a> {
     pub t: f64,
     pub object: &'a Shape,
@@ -31,8 +33,24 @@ impl Shape {
     }
 }
 
+pub fn hit<'a>(intersections: &'a Vec<Intersection>) -> Option<&'a Intersection<'a>> {
+    intersections
+        .iter()
+        .filter(|i| i.t > 0.0)
+        .reduce(|a, b| if a.t < b.t { a } else { b })
+    // TODO can use f64::total_cmp once it's in stable:
+    //  .min_by(|a, b| a.t.total_cmp(&b.t))
+}
+
 pub fn sphere() -> Shape {
     Shape::Sphere(Sphere::new())
+}
+
+pub fn intersection<A: Into<f64>>(t: A, obj: &Shape) -> Intersection {
+    Intersection {
+        t: t.into(),
+        object: obj,
+    }
 }
 
 impl CanIntersect for Shape {
@@ -67,5 +85,32 @@ mod tests {
         assert_eqf64!(is[1].t, 6.0);
         assert_eq!(is[0].object, &s);
         assert_eq!(is[1].object, &s);
+    }
+
+    #[test]
+    fn test_hit_all_positive() {
+        let s = sphere();
+        let ia = intersection(1, &s);
+        let ib = intersection(2, &s);
+        let is = vec![ia.clone(), ib.clone()];
+        assert_eq!(hit(&is), Some(&ia));
+    }
+
+    #[test]
+    fn test_hit_some_negative() {
+        let s = sphere();
+        let ia = intersection(-1, &s);
+        let ib = intersection(1, &s);
+        let is = vec![ia.clone(), ib.clone()];
+        assert_eq!(hit(&is), Some(&ib));
+    }
+
+    #[test]
+    fn test_hit_all_negative() {
+        let s = sphere();
+        let ia = intersection(-2, &s);
+        let ib = intersection(-1, &s);
+        let is = vec![ia.clone(), ib.clone()];
+        assert_eq!(hit(&is), None);
     }
 }
