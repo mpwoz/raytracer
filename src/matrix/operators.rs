@@ -26,11 +26,28 @@ impl PartialEq for Matrix {
     }
 }
 
+// impl Mul for &Matrix {
+//     type Output = Matrix;
+//
+//     fn mul(self, rhs: Self) -> Self::Output {
+//         self * rhs
+//         todo!()
+//     }
+// }
+
 impl Mul for Matrix {
     type Output = Matrix;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        let (a, b) = (self, rhs);
+        &self * &rhs
+    }
+}
+
+impl Mul for &Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let (a, b): (&Matrix, &Matrix) = (self, rhs);
 
         // Determine the size of resulting multiplied matrix
         // also ensure these matrices can be multiplied
@@ -61,8 +78,16 @@ impl Mul<Tuple> for Matrix {
     type Output = Tuple;
 
     fn mul(self, rhs: Tuple) -> Self::Output {
+        &self * &rhs
+    }
+}
+
+impl Mul<&Tuple> for &Matrix {
+    type Output = Tuple;
+
+    fn mul(self, rhs: &Tuple) -> Self::Output {
         let b = Matrix::from_tuple(rhs).transpose();
-        let m = self * b;
+        let m = self * &b;
 
         assert_eq!((m.width, m.height), (1, 4), "Expected a 1x4 (tall) matrix after multiplying with tuple, but got: \n{}", m);
 
@@ -118,7 +143,7 @@ mod tests {
             vec![16., 26., 46., 42.],
         ]);
 
-        assert_eq!(m1 * m2, exp);
+        assert_eq!(&m1 * &m2, exp);
     }
 
     #[test]
@@ -145,6 +170,6 @@ mod tests {
         };
         let exp = exp;
 
-        assert_eq!(m * t, exp);
+        assert_eq!(&m * &t, exp);
     }
 }

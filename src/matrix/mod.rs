@@ -54,7 +54,7 @@ impl Matrix {
         }
     }
 
-    pub fn from_tuple(t: Tuple) -> Matrix {
+    pub fn from_tuple(t: &Tuple) -> Matrix {
         Matrix::from(vec![vec![t.x, t.y, t.z, t.w]])
     }
 

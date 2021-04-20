@@ -99,10 +99,11 @@ mod tests {
     #[test]
     fn test_hit_some_negative() {
         let s = sphere();
-        let ia = intersection(-1, &s);
-        let ib = intersection(1, &s);
-        let is = vec![ia.clone(), ib.clone()];
-        assert_eq!(hit(&is), Some(&ib));
+        let ia = intersection(-3, &s);
+        let ib = intersection(50, &s);
+        let ic = intersection(20, &s);
+        let is = vec![ia.clone(), ib.clone(), ic.clone()];
+        assert_eq!(hit(&is), Some(&ic));
     }
 
     #[test]
