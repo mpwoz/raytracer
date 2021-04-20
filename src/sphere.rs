@@ -15,6 +15,10 @@ impl Sphere {
             transform: Matrix::transformation(),
         }
     }
+
+    pub fn set_transform(self: &mut Self, transform: Matrix) {
+        self.transform = transform
+    }
 }
 
 impl CanIntersect for Sphere {
@@ -23,6 +27,11 @@ impl CanIntersect for Sphere {
     }
 
     fn intersect(&self, ray: Ray) -> Vec<f64> {
+
+        // Transform the ray by the inverse of the object's transform.
+        // this changes "world coordinates" to "object coordinates"
+        let ray = ray.transform(&self.transform.inverse());
+
         let sphere_to_ray = ray.origin - Tuple::origin(); // sphere assumed to be at origin
 
         // https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
@@ -45,9 +54,20 @@ impl CanIntersect for Sphere {
 
 #[cfg(test)]
 mod tests {
-    use crate::tuple::Tuple;
+    use crate::ray::ray;
+    use crate::shape::sphere;
+    use crate::tuple::{point, Tuple, vector};
 
     use super::*;
+
+    #[test]
+    fn can_set_transform() {
+        let mut s = Sphere::new();
+        let t = Matrix::transformation().translate(1., 2., 3.);
+        s.set_transform(t.clone());
+
+        assert_eq!(s.transform, t);
+    }
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
@@ -92,5 +112,23 @@ mod tests {
         let s = Sphere::new();
         let xs = s.intersect(r);
         assert_eq!(xs, vec!(-6.0, -4.0));
+    }
+
+    #[test]
+    fn intersecting_scaled_sphere_with_ray() {
+        let r = ray(point(0, 0, -5), vector(0, 0, 1));
+        let mut s = Sphere::new();
+        s.set_transform(Matrix::scaling(2., 2., 2.));
+        let xs = s.intersect(r);
+        assert_eq!(xs, vec!(3., 7., ));
+    }
+
+    #[test]
+    fn intersecting_translated_sphere_with_ray() {
+        let r = ray(point(0, 0, -5), vector(0, 0, 1));
+        let mut s = Sphere::new();
+        s.set_transform(Matrix::translation(5., 0., 0.));
+        let xs = s.intersect(r);
+        assert_eq!(xs, vec!()); // empty
     }
 }
