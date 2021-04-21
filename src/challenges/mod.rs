@@ -45,3 +45,4 @@ pub fn chapter5_render_sphere_silhouette() {
 
     canvas.save_to_disk("/tmp/output.ppm");
 }
+

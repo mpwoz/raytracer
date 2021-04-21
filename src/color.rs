@@ -32,9 +32,18 @@ impl Color {
             rgb(clamped.blue)
         )
     }
+
+    pub fn round(&self, places: i32) -> Color {
+        Color::from_tuple(self.tuple().round(places))
+    }
 }
 
 impl Color {
+    pub const BLACK: Color = Color {
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+    };
     pub const WHITE: Color = Color {
         red: 1.0,
         green: 1.0,
@@ -66,6 +75,15 @@ impl Color {
             blue: v.z,
         }
     }
+}
+
+pub fn color<X, Y, Z>(r: X, g: Y, b: Z) -> Color
+    where
+        X: Into<f64>,
+        Y: Into<f64>,
+        Z: Into<f64>,
+{
+    Color::rgb(r.into(), g.into(), b.into())
 }
 
 impl Add for Color {

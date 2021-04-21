@@ -16,6 +16,13 @@ impl PointLight {
     }
 }
 
+pub fn point_light(point: Tuple, color: Color) -> PointLight {
+    PointLight {
+        position: point,
+        intensity: color,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::tuple::point;
