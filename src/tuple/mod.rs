@@ -67,21 +67,21 @@ mod assert_vectors_tests {
 /// Instance methods
 impl Tuple {
     /// Return a Vector's magnitude using Pythagoras' theorem.
-    pub(crate) fn magnitude(&self) -> f64 {
+    pub fn magnitude(&self) -> f64 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
     /// Dot product of this vector with another (defined as sum of products of each vector component)
     /// Intuitively: small number (-1): vectors point away from each other. Large (1) they point the same direction.
     /// dot of two unit vectors is the cosine of angle between them.
-    pub(crate) fn dot(&self, rhs: Tuple) -> f64 {
+    pub fn dot(&self, rhs: Tuple) -> f64 {
         assert_vectors!(self, rhs);
         (self.x * rhs.x) + (self.y * rhs.y) + (self.z * rhs.z) + (self.w * rhs.w)
     }
 
     /// Cross product of two vectors
     /// Result is a vector perpendicular to them
-    pub(crate) fn cross(self, rhs: Self) -> Self {
+    pub fn cross(self, rhs: Self) -> Self {
         assert_vectors!(self, rhs);
         let x: f64 = self.y * rhs.z - self.z * rhs.y;
         let y: f64 = self.z * rhs.x - self.x * rhs.z;
@@ -91,7 +91,7 @@ impl Tuple {
 
     /// Hadamard product of two tuples (multiply individual components together).
     /// Can be used to blend a color with another.
-    pub(crate) fn hadamard(self, rhs: Self) -> Self {
+    pub fn hadamard(self, rhs: Self) -> Self {
         Tuple {
             x: self.x * rhs.x,
             y: self.y * rhs.y,
@@ -110,13 +110,14 @@ impl Tuple {
             w: round(self.w),
         }
     }
-}
 
-/// Static methods
-impl Tuple {
     pub fn normalized(&self) -> Self {
         let len = self.magnitude();
         self.clone() / len
+    }
+
+    pub fn reflect(&self, normal: Tuple) -> Self {
+        *(self) - normal * 2.0 * (self.dot(normal))
     }
 
     pub fn origin() -> Tuple {
@@ -264,5 +265,20 @@ mod tests {
         let b = vector(2., 3., 4);
         assert_eq!(a.hadamard(b), vector(2., 6., 12.));
         assert_eq!(a.hadamard(b), b.hadamard(a));
+    }
+
+    #[test]
+    fn reflecting_vector_at_45deg() {
+        let v = vector(1, -1, 0);
+        let n = vector(0, 1, 0);
+        assert_eq!(v.reflect(n), vector(1, 1, 0));
+    }
+
+    #[test]
+    fn reflecting_vector_off_slanted_surface_normal() {
+        let v = vector(0, -1, 0);
+        let trt = 2_f64.sqrt() / 2.0;
+        let n = vector(trt, trt, 0);
+        assert_eq!(v.reflect(n).round(5), vector(1, 0, 0));
     }
 }
