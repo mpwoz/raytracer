@@ -38,7 +38,7 @@
 - ✅ Chapter 3: Matrices
 - ✅ Chapter 4: Matrix transformations
 - ✅ Chapter 5: Ray-Sphere intersections
-- Chapter 6: Light and Shading
+- ✅ Chapter 6: Light and Shading
 - Chapter 7: Making a Scene
 - Chapter 8: Shadows
 - Chapter 9: Planes
