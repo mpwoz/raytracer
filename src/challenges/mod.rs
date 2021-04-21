@@ -1,7 +1,7 @@
 use std::f64::consts::PI;
 
 use crate::canvas::Canvas;
-use crate::color::{Color, color};
+use crate::color::{color, Color};
 use crate::light::PointLight;
 use crate::material::Material;
 use crate::matrix::Matrix;
@@ -10,7 +10,7 @@ use crate::shape::{CanIntersect, hit, Intersection, Shape, sphere};
 use crate::sphere::Sphere;
 use crate::tuple::point;
 
-pub fn chapter6_render_shaded_sphere() {
+pub fn chapter6_render_shaded_sphere(resolution: usize) {
     let camera_origin = point(0, 0, -5);
 
     // set up Sphere with a material
@@ -27,7 +27,7 @@ pub fn chapter6_render_shaded_sphere() {
     let wall_z_coord = 5_f64;
     let half_wall = 5.;
 
-    let canvas_dimensions = 500;
+    let canvas_dimensions = resolution;
     let mut canvas = Canvas::new(canvas_dimensions, canvas_dimensions);
 
     let wall_dimensions = 10;
@@ -39,9 +39,13 @@ pub fn chapter6_render_shaded_sphere() {
         .translate(-half_wall, -half_wall, wall_z_coord)
         .rotate_z(PI);
 
-
     for x in 0..canvas_dimensions {
-        println!("{}% done", 100 * x / canvas_dimensions);
+
+        // print progress once in a while
+        if x % 10 == 0 {
+            println!("{}% done", 100 * x / canvas_dimensions);
+        }
+
         for y in 0..canvas_dimensions {
             let wall_coordinate = &canvas_to_wall * &point(x as f64, y as f64, 0);
 
@@ -52,7 +56,7 @@ pub fn chapter6_render_shaded_sphere() {
             let hit = hit(intersections);
 
             if hit.is_none() {
-                continue // skip non-intersecting rays
+                continue; // skip non-intersecting rays
             }
 
             let intersection = hit.unwrap();
@@ -60,7 +64,9 @@ pub fn chapter6_render_shaded_sphere() {
             let pos = ray.position(intersection.t);
             let normalv = intersection.object.normal_at(pos);
             let eyev = -ray_direction;
-            let hit_color = intersection.object.material()
+            let hit_color = intersection
+                .object
+                .material()
                 .lighting(light, pos, eyev, normalv);
             canvas.write_pixel(x, y, hit_color);
         }
@@ -68,4 +74,3 @@ pub fn chapter6_render_shaded_sphere() {
 
     canvas.save_to_disk("/tmp/ch6_shaded_sphere.ppm");
 }
-

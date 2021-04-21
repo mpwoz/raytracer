@@ -31,11 +31,7 @@ impl Matrix {
     /// Constructs a new matrix of given dimensions - all elements initialized to 0
     pub fn new(width: usize, height: usize) -> Self {
         let elements: Vec<Vec<f64>> = vec![vec![0.; width]; height];
-        Matrix {
-            width,
-            height,
-            elements,
-        }
+        Matrix::from(elements)
     }
 
     /// Constructs a new matrix given the 2d-array of elements, assumed to be well-formed.
@@ -74,8 +70,9 @@ impl Matrix {
 
     /// Get a single value from the matrix given its:
     /// row (0-indexed from the top) and column (0-indexed from left)
+    #[inline]
     pub fn get(&self, row: usize, col: usize) -> f64 {
-        assert!(self.in_bounds(row, col));
+        // assert!(self.in_bounds(row, col));
         self.elements[row][col]
     }
 

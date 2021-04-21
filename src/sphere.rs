@@ -7,7 +7,8 @@ use crate::tuple::Tuple;
 
 #[derive(Debug, PartialEq)]
 pub struct Sphere {
-    pub transform: Matrix,
+    transform: Matrix,
+    inverse_transform: Matrix,
     pub material: Material,
 }
 
@@ -15,12 +16,18 @@ impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
             transform: Matrix::transformation(),
+            inverse_transform: Matrix::transformation().inverse(),
             material: Material::new(),
         }
     }
 
     pub fn set_transform(self: &mut Self, transform: Matrix) {
-        self.transform = transform
+        self.transform = transform;
+        self.inverse_transform = self.transform().inverse();
+    }
+
+    fn inverse_transform(&self) -> &Matrix {
+        &self.inverse_transform
     }
 }
 
@@ -32,7 +39,7 @@ impl CanIntersect for Sphere {
     fn intersect(&self, ray: Ray) -> Vec<f64> {
         // Transform the ray by the inverse of the object's transform.
         // this changes "world coordinates" to "object coordinates"
-        let ray = ray.transform(&self.transform.inverse());
+        let ray = ray.transform(self.inverse_transform());
 
         let sphere_to_ray = ray.origin - Tuple::origin(); // sphere assumed to be at origin
 
@@ -54,9 +61,10 @@ impl CanIntersect for Sphere {
     }
 
     fn normal_at(&self, point: Tuple) -> Tuple {
-        let object_point = self.transform.inverse() * point;
+        let inverse_transform = self.inverse_transform();
+        let object_point = inverse_transform * &point;
         let object_normal = object_point - Tuple::origin();
-        let mut world_normal = self.transform.inverse().transpose() * object_normal;
+        let mut world_normal = inverse_transform.transpose() * object_normal;
 
         world_normal.w = 0.; // hack to fix w
         world_normal.normalized()

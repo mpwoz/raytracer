@@ -86,19 +86,26 @@ impl Mul<&Tuple> for &Matrix {
     type Output = Tuple;
 
     fn mul(self, rhs: &Tuple) -> Self::Output {
-        let b = Matrix::from_tuple(rhs).transpose();
-        let m = self * &b;
+        // let b = Matrix::from_tuple(rhs).transpose();
+        // let m = self * &b;
+        //
+        // assert_eq!((m.width, m.height), (1, 4), "Expected a 1x4 (tall) matrix after multiplying with tuple, but got: \n{}", m);
+        //
+        // let (x, y, z, w) = (
+        //     m.get(0, 0),
+        //     m.get(1, 0),
+        //     m.get(2, 0),
+        //     m.get(3, 0),
+        // );
+        //
+        // Tuple { x, y, z, w }
 
-        assert_eq!((m.width, m.height), (1, 4), "Expected a 1x4 (tall) matrix after multiplying with tuple, but got: \n{}", m);
-
-        let (x, y, z, w) = (
-            m.get(0, 0),
-            m.get(1, 0),
-            m.get(2, 0),
-            m.get(3, 0),
-        );
-
-        Tuple { x, y, z, w }
+        Tuple {
+            x: self.get(0, 0) * rhs.x + self.get(0, 1) * rhs.y + self.get(0, 2) * rhs.z + self.get(0, 3) * rhs.w,
+            y: self.get(1, 0) * rhs.x + self.get(1, 1) * rhs.y + self.get(1, 2) * rhs.z + self.get(1, 3) * rhs.w,
+            z: self.get(2, 0) * rhs.x + self.get(2, 1) * rhs.y + self.get(2, 2) * rhs.z + self.get(2, 3) * rhs.w,
+            w: self.get(3, 0) * rhs.x + self.get(3, 1) * rhs.y + self.get(3, 2) * rhs.z + self.get(3, 3) * rhs.w,
+        }
     }
 }
 

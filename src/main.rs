@@ -31,7 +31,15 @@ fn main() {
     // ch4_clock_face();
     // animated_clock_frames();
 
-    chapter6_render_shaded_sphere();
+    use std::time::Instant;
+    let now = Instant::now();
+
+    {
+        chapter6_render_shaded_sphere(1000);
+    }
+
+    let elapsed = now.elapsed().as_millis();
+    println!("Elapsed: {:.2} ms", elapsed);
 }
 
 /// Chapter 2 drawing a projectile
