@@ -1,19 +1,33 @@
 use std::f64::consts::PI;
 
 use crate::canvas::Canvas;
-use crate::color::Color;
+use crate::color::{Color, color};
+use crate::light::PointLight;
+use crate::material::Material;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
-use crate::shape::{hit, sphere};
+use crate::shape::{CanIntersect, hit, Intersection, Shape, sphere};
+use crate::sphere::Sphere;
 use crate::tuple::point;
 
-pub fn chapter5_render_sphere_silhouette() {
+pub fn chapter6_render_shaded_sphere() {
     let camera_origin = point(0, 0, -5);
-    let sphere = sphere();
+
+    // set up Sphere with a material
+    let mut s = Sphere::new();
+    let mut m = Material::new();
+    m.color = color(1, 0.2, 1);
+    s.material = m;
+    let sphere = Shape::Sphere(s);
+    let light = PointLight {
+        position: point(-10, 10, -10),
+        intensity: Color::WHITE,
+    };
+
     let wall_z_coord = 5_f64;
     let half_wall = 5.;
 
-    let canvas_dimensions = 150;
+    let canvas_dimensions = 500;
     let mut canvas = Canvas::new(canvas_dimensions, canvas_dimensions);
 
     let wall_dimensions = 10;
@@ -31,18 +45,27 @@ pub fn chapter5_render_sphere_silhouette() {
         for y in 0..canvas_dimensions {
             let wall_coordinate = &canvas_to_wall * &point(x as f64, y as f64, 0);
 
-            let ray_direction = wall_coordinate - camera_origin;
+            let ray_direction = (wall_coordinate - camera_origin).normalized();
             let ray = Ray::new(camera_origin, ray_direction);
 
             let intersections = &sphere.intersections(ray);
             let hit = hit(intersections);
 
-            if hit.is_some() {
-                canvas.write_pixel(x, y, Color::rgb(1., 0.2, 0.2));
+            if hit.is_none() {
+                continue // skip non-intersecting rays
             }
+
+            let intersection = hit.unwrap();
+
+            let pos = ray.position(intersection.t);
+            let normalv = intersection.object.normal_at(pos);
+            let eyev = -ray_direction;
+            let hit_color = intersection.object.material()
+                .lighting(light, pos, eyev, normalv);
+            canvas.write_pixel(x, y, hit_color);
         }
     }
 
-    canvas.save_to_disk("/tmp/output.ppm");
+    canvas.save_to_disk("/tmp/ch6_shaded_sphere.ppm");
 }
 

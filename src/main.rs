@@ -4,7 +4,7 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::canvas::Canvas;
-use crate::challenges::chapter5_render_sphere_silhouette;
+use crate::challenges::chapter6_render_shaded_sphere;
 use crate::color::Color;
 use crate::matrix::Matrix;
 use crate::projectile::{Environment, Projectile};
@@ -31,7 +31,7 @@ fn main() {
     // ch4_clock_face();
     // animated_clock_frames();
 
-    chapter5_render_sphere_silhouette()
+    chapter6_render_shaded_sphere();
 }
 
 /// Chapter 2 drawing a projectile
