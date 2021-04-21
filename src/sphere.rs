@@ -27,7 +27,6 @@ impl CanIntersect for Sphere {
     }
 
     fn intersect(&self, ray: Ray) -> Vec<f64> {
-
         // Transform the ray by the inverse of the object's transform.
         // this changes "world coordinates" to "object coordinates"
         let ray = ray.transform(&self.transform.inverse());
@@ -50,12 +49,22 @@ impl CanIntersect for Sphere {
 
         vec![t1, t2]
     }
+
+    fn normal_at(&self, point: Tuple) -> Tuple {
+        let object_point = self.transform.inverse() * point;
+        let object_normal = object_point - Tuple::origin();
+        let mut world_normal = self.transform.inverse().transpose() * object_normal;
+
+        world_normal.w = 0.; // hack to fix w
+        world_normal.normalized()
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::f64::consts::PI;
+
     use crate::ray::ray;
-    use crate::shape::sphere;
     use crate::tuple::{point, Tuple, vector};
 
     use super::*;
@@ -130,5 +139,40 @@ mod tests {
         s.set_transform(Matrix::translation(5., 0., 0.));
         let xs = s.intersect(r);
         assert_eq!(xs, vec!()); // empty
+    }
+
+    #[test]
+    fn normals_on_sphere() {
+        let s = Sphere::new();
+        assert_eq!(s.normal_at(point(1, 0, 0)), vector(1, 0, 0));
+        assert_eq!(s.normal_at(point(0, 1, 0)), vector(0, 1, 0));
+        assert_eq!(s.normal_at(point(0, 0, 1)), vector(0, 0, 1));
+        assert_eq!(s.normal_at(point(0, 0, -1)), vector(0, 0, -1));
+
+        // non-axis-aligned
+        let srt = 3_f64.sqrt() / 3_f64;
+        let normal: Tuple = s.normal_at(point(srt, srt, srt));
+        assert_eq!(normal, vector(srt, srt, srt));
+        assert_eq!(normal, normal.normalized());
+    }
+
+    #[allow(clippy::all)] //noinspection RsApproxConstant
+    #[test]
+    fn normals_on_translated_sphere() {
+        let mut s = Sphere::new();
+        s.set_transform(Matrix::translation(0., 1., 0.));
+        let n = s.normal_at(point(0, 1.70711, -0.70711));
+        assert_eq!(n.round(5), vector(0, 0.70711, -0.70711));
+    }
+
+    #[test]
+    fn normals_on_transformed_sphere() {
+        let mut s = Sphere::new();
+        let t: Matrix = Matrix::scaling(1., 0.5, 1.) * Matrix::rotation_z(PI / 5.0);
+        s.set_transform(t);
+
+        let trt = 2_f64.sqrt() / 2.;
+        let n = s.normal_at(point(0, trt, -trt));
+        assert_eq!(n.round(5), vector(0, 0.97014, -0.24254));
     }
 }

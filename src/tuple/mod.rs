@@ -114,27 +114,27 @@ impl Tuple {
 
 /// Static methods
 impl Tuple {
-    pub(crate) fn normalized(vector: Self) -> Self {
-        let len = vector.magnitude();
-        vector / len
+    pub fn normalized(&self) -> Self {
+        let len = self.magnitude();
+        self.clone() / len
     }
 
-    pub(crate) fn origin() -> Tuple {
+    pub fn origin() -> Tuple {
         Self::point(0., 0., 0.)
     }
-    pub(crate) fn point(x: f64, y: f64, z: f64) -> Tuple {
+    pub fn point(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 1.0 }
     }
 
-    pub(crate) fn vector(x: f64, y: f64, z: f64) -> Tuple {
+    pub fn vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple { x, y, z, w: 0.0 }
     }
 
-    pub(crate) fn is_point(&self) -> bool {
+    pub fn is_point(&self) -> bool {
         eq_f64(self.w, 1_f64)
     }
 
-    pub(crate) fn is_vector(&self) -> bool {
+    pub fn is_vector(&self) -> bool {
         eq_f64(self.w, 0_f64)
     }
 }
@@ -229,7 +229,7 @@ mod tests {
     #[test]
     fn test_unit_vector() {
         fn test(vec: Tuple, expected: Tuple) {
-            assert_eq!(Tuple::normalized(vec), expected);
+            assert_eq!(vec.normalized(), expected);
         }
 
         test(Tuple::vector(4., 0., 0.), Tuple::vector(1., 0., 0.));

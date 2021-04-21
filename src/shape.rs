@@ -4,10 +4,12 @@ use crate::assert_eqf64;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
 use crate::sphere::Sphere;
+use crate::tuple::Tuple;
 
 pub trait CanIntersect {
     fn transform(&self) -> &Matrix;
     fn intersect(&self, ray: Ray) -> Vec<f64>;
+    fn normal_at(&self, point: Tuple) -> Tuple;
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -63,6 +65,12 @@ impl CanIntersect for Shape {
     fn intersect(&self, ray: Ray) -> Vec<f64> {
         match *self {
             Shape::Sphere(ref s) => s.intersect(ray),
+        }
+    }
+
+    fn normal_at(&self, point: Tuple) -> Tuple {
+        match *self {
+            Shape::Sphere(ref s) => s.normal_at(point),
         }
     }
 }

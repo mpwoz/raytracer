@@ -45,7 +45,7 @@ fn ch2_projectile() {
     // projectile
     let start = Tuple::point(0., 1., 0.);
     let velocity = Tuple::vector(1., 1.8, 0.);
-    let velocity = Tuple::normalized(velocity) * 11.25;
+    let velocity = velocity.normalized() * 11.25;
     let mut p = Projectile {
         position: start,
         velocity,
