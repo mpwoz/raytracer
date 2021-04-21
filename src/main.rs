@@ -21,6 +21,8 @@ mod ray;
 mod sphere;
 mod shape;
 mod challenges;
+mod light;
+mod material;
 
 
 fn main() {

@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 
 use crate::assert_eqf64;
+use crate::material::Material;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
 use crate::sphere::Sphere;
@@ -10,6 +11,7 @@ pub trait CanIntersect {
     fn transform(&self) -> &Matrix;
     fn intersect(&self, ray: Ray) -> Vec<f64>;
     fn normal_at(&self, point: Tuple) -> Tuple;
+    fn material(&self) -> Material;
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -71,6 +73,12 @@ impl CanIntersect for Shape {
     fn normal_at(&self, point: Tuple) -> Tuple {
         match *self {
             Shape::Sphere(ref s) => s.normal_at(point),
+        }
+    }
+
+    fn material(&self) -> Material {
+        match *self {
+            Shape::Sphere(ref s) => s.material(),
         }
     }
 }

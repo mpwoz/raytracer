@@ -1,4 +1,5 @@
 use crate::assert_eqf64;
+use crate::material::Material;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
 use crate::shape::{CanIntersect, Shape};
@@ -7,12 +8,14 @@ use crate::tuple::Tuple;
 #[derive(Debug, PartialEq)]
 pub struct Sphere {
     pub transform: Matrix,
+    pub material: Material,
 }
 
 impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
             transform: Matrix::transformation(),
+            material: Material::new(),
         }
     }
 
@@ -58,12 +61,17 @@ impl CanIntersect for Sphere {
         world_normal.w = 0.; // hack to fix w
         world_normal.normalized()
     }
+
+    fn material(&self) -> Material {
+        self.material
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use std::f64::consts::PI;
 
+    use crate::material::Material;
     use crate::ray::ray;
     use crate::tuple::{point, Tuple, vector};
 
@@ -174,5 +182,20 @@ mod tests {
         let trt = 2_f64.sqrt() / 2.;
         let n = s.normal_at(point(0, trt, -trt));
         assert_eq!(n.round(5), vector(0, 0.97014, -0.24254));
+    }
+
+    #[test]
+    fn sphere_materials() {
+        let mut sphere = Sphere::new();
+
+        // has default mat
+        assert_eq!(sphere.material(), Material::new());
+
+        // assigning a mat
+        let mut mat = Material::new();
+        mat.ambient = 1.0;
+        sphere.material = mat;
+
+        assert_eq!(sphere.material(), mat);
     }
 }
