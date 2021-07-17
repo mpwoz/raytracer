@@ -10,3 +10,6 @@ convert:
 	# depends on image magick being installed
 	./convert_images.sh
 
+clean:
+	rm -rf ./output
+
