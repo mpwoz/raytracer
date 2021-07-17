@@ -37,7 +37,8 @@ fn main() {
     println!("Starting renders");
 
     ch2_projectile::ch2_projectile();
-    ch4_clock::render_clock_things(false);
+    let should_render_animation = true;
+    ch4_clock::render_clock_things(should_render_animation);
     ch6_shading_spheres::chapter6_render_shaded_sphere(1000);
 
     let elapsed = now.elapsed().as_millis();
