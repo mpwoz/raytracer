@@ -10,67 +10,21 @@ use crate::shape::{CanIntersect, hit, Intersection, Shape, sphere};
 use crate::sphere::Sphere;
 use crate::tuple::point;
 
-pub fn chapter6_render_shaded_sphere(resolution: usize) {
-    let camera_origin = point(0, 0, -5);
+pub mod ch2_projectile;
+pub mod ch4_clock;
+pub mod ch6_shading_spheres;
 
-    // set up Sphere with a material
-    let mut s = Sphere::new();
-    let mut m = Material::new();
-    m.color = color(1, 0.2, 1);
-    s.material = m;
-    let sphere = Shape::Sphere(s);
-    let light = PointLight {
-        position: point(-10, 10, -10),
-        intensity: Color::WHITE,
-    };
+// TODO pass this in as a cli param from cargo run
+static OUTPUT_DIRECTORY: &str = "./output";
 
-    let wall_z_coord = 5_f64;
-    let half_wall = 5.;
+/// prepends the project's output directory so that things are all written to the same place.
+pub fn outfile(filename: &str) -> String {
+    let formatted: String = format!("{}/{}", OUTPUT_DIRECTORY, filename);
+    return formatted;
+}
 
-    let canvas_dimensions = resolution;
-    let mut canvas = Canvas::new(canvas_dimensions, canvas_dimensions);
-
-    let wall_dimensions = 10;
-
-    let scaling_factor = (wall_dimensions as f64) / (canvas_dimensions as f64);
-    // canvas assumed to be at z=0, this translates the x/y-coordinates to "wall space"
-    let canvas_to_wall: Matrix = Matrix::transformation()
-        .scale(scaling_factor, scaling_factor, 1.)
-        .translate(-half_wall, -half_wall, wall_z_coord)
-        .rotate_z(PI);
-
-    for x in 0..canvas_dimensions {
-
-        // print progress once in a while
-        if x % 10 == 0 {
-            println!("{}% done", 100 * x / canvas_dimensions);
-        }
-
-        for y in 0..canvas_dimensions {
-            let wall_coordinate = &canvas_to_wall * &point(x as f64, y as f64, 0);
-
-            let ray_direction = (wall_coordinate - camera_origin).normalized();
-            let ray = Ray::new(camera_origin, ray_direction);
-
-            let intersections = &sphere.intersections(ray);
-            let hit = hit(intersections);
-
-            if hit.is_none() {
-                continue; // skip non-intersecting rays
-            }
-
-            let intersection = hit.unwrap();
-
-            let pos = ray.position(intersection.t);
-            let normalv = intersection.object.normal_at(pos);
-            let eyev = -ray_direction;
-            let hit_color = intersection
-                .object
-                .material()
-                .lighting(light, pos, eyev, normalv);
-            canvas.write_pixel(x, y, hit_color);
-        }
-    }
-
-    canvas.save_to_disk("/tmp/ch6_shaded_sphere.ppm");
+/// Utility method to automatically use the right extension, output to the project output directory, etc.
+pub fn save(canvas: &Canvas, filename: &str) {
+    let formatted = format!("{}.ppm", filename);
+    canvas.save_to_disk(outfile(formatted.as_str()).as_str())
 }

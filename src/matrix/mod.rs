@@ -1,13 +1,11 @@
 use std::fmt::{Display, Formatter, Result};
 
-use crate::assert_eqf64;
-use crate::eqf64::eq_f64;
 use crate::tuple::Tuple;
 
 pub mod determinant;
+mod functional;
 pub mod operators;
 pub mod parsing;
-mod functional;
 mod transformation;
 
 #[derive(Debug, Clone)]
@@ -102,6 +100,9 @@ impl Matrix {
 
 #[cfg(test)]
 mod tests {
+    use crate::assert_eqf64;
+    use crate::eqf64::eq_f64;
+
     use super::*;
 
     #[test]

@@ -13,9 +13,9 @@ pub struct Environment {
 }
 
 impl Projectile {
-    pub fn update(&self, env: &Environment, dtime: f64) -> Self {
-        let position = self.position + (self.velocity * dtime);
-        let accel = (env.gravity + env.wind) * dtime;
+    pub fn update(&self, env: &Environment, time_delta: f64) -> Self {
+        let position = self.position + (self.velocity * time_delta);
+        let accel = (env.gravity + env.wind) * time_delta;
         let velocity = self.velocity + accel;
 
         Projectile { position, velocity }

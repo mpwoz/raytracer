@@ -57,6 +57,8 @@ pub fn intersection<A: Into<f64>>(t: A, obj: &Shape) -> Intersection {
     }
 }
 
+/// Every "subclass" of Shape should implement its own version of the CanIntersect methods. This
+/// parent-level implementation matches against the child type, and delegates to it.
 impl CanIntersect for Shape {
     fn transform(&self) -> &Matrix {
         match *self {

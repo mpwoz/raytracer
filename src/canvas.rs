@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
+use crate::challenges::outfile;
 use crate::color::Color;
 
 pub struct Canvas {
@@ -86,6 +87,11 @@ impl Canvas {
 
         let path = Path::new(location);
         let display = path.display();
+
+        // create the directory first, if it doesn't exist
+        let prefix = path.parent().unwrap();
+        std::fs::create_dir_all(prefix).unwrap();
+
         let mut file = match File::create(&path) {
             Err(why) => panic!("couldn't create {}: {}", display, why),
             Ok(file) => file,
@@ -93,7 +99,7 @@ impl Canvas {
 
         match file.write_all(ppm.as_bytes()) {
             Err(why) => panic!("couldn't write to {}: {}", display, why),
-            Ok(_) => println!("successfully wrote output to {}", display),
+            Ok(_) => println!("Wrote output to {}", display),
         };
     }
 }

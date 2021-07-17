@@ -4,9 +4,11 @@ use crate::tuple::Tuple;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Ray {
+    //  point
     pub origin: Tuple,
-    // a point
-    pub direction: Tuple, // a vector
+
+    // vector
+    pub direction: Tuple,
 }
 
 impl Ray {
@@ -25,8 +27,8 @@ impl Ray {
     }
 }
 
-pub fn ray(p: Tuple, v: Tuple) -> Ray {
-    Ray::new(p, v)
+pub fn ray(origin_point: Tuple, direction_vector: Tuple) -> Ray {
+    Ray::new(origin_point, direction_vector)
 }
 
 #[cfg(test)]
